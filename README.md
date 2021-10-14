@@ -1,0 +1,100 @@
+# Project 1 CSCE 240 Fall 2021 (20 points)
+This project is a basic login system. It runs off of a command line interface (CLI) as well as implements the ability for the user to add, delete, search and more. The data for the system will be stored in a CSV file).
+
+This login system only has the capacity for 5 users at most. The starting users for the system are in the data/ folder in a file called  `user_info.csv`.  
+
+### Format
+In the file there are 4 attributes for each user: Name, Email, Password and Job Title.
+
+This is how the file starts
+```
+Earl Jones,EarlJones@email.com,7Rfkqyuq,Manager
+Kandy McGill,KandyMcGill@email.com,bYeP82i6,Engineer
+Hank Stark,HankStark@email.com,t277Bqyi,Manager
+Bob Baker,BobBaker@email.com,yidHvr81,Engineer
+Tariq Thompson,TariqThompson@email.com,hB23uiyu,CEO
+```
+- Col 0 = Name
+- Col 1 = Email
+- Col 2 = Password
+- Col 3 = Job Title
+
+- `bool readUsers(string fh, string data[ROWS][COLS]);`
+  -   Reads in the user from the flat csv file and stores it in the data array.
+  -   `fh` is the name of the file to be read. This will be sent in by the main. 
+  -   `data` is a 5x4 array that is populated with the data from the `user_info.csv` file. 
+- `void printUsers(const string data[ROWS][COLS]);`
+  - Prints out the contents of the 2d array to standard out and is used for debugging
+  - `data` is a 5x4 array that has all the user information 
+- `bool validateOption(char option);`
+  - This function will validate whether a valid input was given to the CLI. 
+  - The valid inputs are: E, e, P, p, S, s, F, f, A, a, D, d but are all translated to lowercase.
+  - `option` is the character that is checked for being a valid input
+  - returns true if `option` is a valid input, false otherwise.
+- `char displayOptions();`
+  -  This function displays the command line options that the user can input into your system. 
+  -  It includes a call to `cin` to get the choice from the user and return this choice if it is a valid option
+- `void executeOption(char option, const string data[ROWS][COLS], string fn);`
+  - Based on the `option` that is inputed, the correct function is called.
+  - Options: 
+    - E/e Ends the program - Handled by the flow in the main function in main.cpp
+    - P/p Calls printUsers()
+    - S/s Calls searchForUser()
+    - F/f Calls findAllUsers() - Reads a job title from the user to pass to this function. Also prints out the number of users that were found here. 
+    - A/a Calls the addUser() function - Reads in a name and a job title from the user to send to this function. First checks to see if there is an empty spot (a row populated by "NULL"s  <-- actual string). If there is not, then it notifies the user that the database is full. No duplicates either.
+    - D/d Calls the deleteUser() function - Reads in a name from the user to send to this function.
+  - `option` is the action that the user chose in the `displayOptions()` 
+  - `data` is a 5x4 array that has the user information 
+  -  `fh` is the name of the file.
+- `int searchForUser(string name, const string data[ROWS][COLS]);`
+  -  Allows the user to search the data array by name. If there is a match then the index of the match (row number) is returned. If there isn't match then -1 is returned. 
+  -  `data` is a 5x4 array that has the user information
+
+- `int findAllUsers(string title, const string data[ROWS][COLS]);` 
+  - This function allows the user to find the number of users that have a certain job title in the data. 
+  -  Searched in the `data` array (always in column 3).
+  -  returns an int - # of matches of a given string `title`
+- `bool deleteUser(string name, string data[ROWS][COLS], string);`
+  - Allows the user to delete a user from the system given `name`. If the `name` does not exist then this function returns false. If the `name` does exist then replaces all values of the row in which `name` was found with "NULL". It writes the changes back to the `user_info.csv`.
+  -  returns an bool - false if name was not found, true if it was found and deleted.
+
+Ex. of deleteUser(). 
+```  File Start
+Earl Jones,EarlJones@email.com,7Rfkqyuq,Manager
+Kandy McGill,KandyMcGill@email.com,bYeP82i6,Engineer
+Hank Stark,HankStark@email.com,t277Bqyi,Manager
+Bob Baker,BobBaker@email.com,yidHvr81,Engineer
+Tariq Thompson,TariqThompson@email.com,hB23uiyu,CEO
+```
+`deleteUser("Bob Baker", data, fh)`
+```
+Earl Jones,EarlJones@email.com,7Rfkqyuq,Manager
+Kandy McGill,KandyMcGill@email.com,bYeP82i6,Engineer
+Hank Stark,HankStark@email.com,t277Bqyi,Manager
+NULL,NULL,NULL,NULL
+Tariq Thompson,TariqThompson@email.com,hB23uiyu,CEO
+```
+ 
+- `string generatePassword();`
+  - Generates a password for a user. This function is called within the `addUser()` function. 
+  - Returns a string that has the following attributes:
+    -  8 characters
+    - Exactly 1 number (0-9) 
+    - Exactly 1 uppercase letter
+    - Exactly 6 lowercase letters
+    - Random numbers can be generated by either using the `rand()` and translated into ascii to become characters.
+- `string generateEmail(string name);`
+  - Generates an email from a `name` that is passed. This function is called by the `addUser()` function. 
+  - Returns a string that contains the email. General Form: 
+    - "Barack Obama" to "BarackObama@email.com"
+    - Removes all spaces in name
+- `int checkEmpty(const string data[ROWS][COLS]);`
+  - Returns the first row of the `data` array that is emptyThis function will be called before the `addUser()` function in `executeOption()` . The first parameter of  `addUser()`  will take in `int` returned from this function.  
+  - If there are no empty rows, checkEmpty returns -1
+- `void addUser(int index, string name, string title, string data[ROWS][COLS], string fh);`
+  - TAllows the user to add a user to the database at an `index`. This function calls the `generatePassword()` and `generateEmail()` functions to fill in values. This function writes the changes back to the `user_info.csv` file. 
+  - `index` is the row in which to add the user. 
+  - `name` is the name of the new user to add. 
+  - `title` is the job title of the new user to add.
+  - `data` is a 5x4 array that has the user information
+  - `fh` is the name of the file to open and write to. 
