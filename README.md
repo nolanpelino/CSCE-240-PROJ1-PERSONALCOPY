@@ -1,4 +1,5 @@
-# Project 1 CSCE 240 Fall 2021 (20 points)
+# CSCE-240-PROJ1-PERSONALCOPY
+
 This project is a basic login system. It runs off of a command line interface (CLI) as well as implements the ability for the user to add, delete, search and more. The data for the system is be stored in a CSV file. This login system only has the capacity for 5 users at most. The starting users for the system are in the data/ folder in a file called  `user_info.csv`.  
 
 ### Format
